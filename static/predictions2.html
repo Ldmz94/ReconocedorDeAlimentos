@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Prediction app</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<style>
+		*{font-size: 30px}
+	</style>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    	<a class="navbar-brand" href="#">Analizador de desayunos. Juliana y Luis Daniel</a>
+    </nav>
+    <br>
+	<input id = "image-selector" type ="file">
+	<button id ="predict-button">Predict</button>
+	<p style="font-weight: bold">Predictions</p>
+	<p>automobile: <span id ="automobile-prediction"></span></p>
+	<p>cat: <span id ="cat-prediction"></span></p>
+	<p>dog: <span id ="dog-prediction"></span></p>
+	<p>ship: <span id ="ship-prediction"></span></p>
+	<p>truck: <span id ="truck-prediction"></span></p>
+	
+	<img id ="selected-image" src =""/>
+
+
+
+
+	<script src ="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script>
+		let base64Image;
+		$("#image-selector").change(function(){
+			let reader = new FileReader();
+			reader.onload = function(e){
+				let dataURL = reader.result;
+				$("#selected-image").attr("src", dataURL);
+				base64Image = dataURL.replace("data:image/jpeg;base64,","");
+				console.log(base64Image);
+			}
+			reader.readAsDataURL($("#image-selector")[0].files[0]);
+			$("#automobile-prediction").text("");
+			$("#cat-prediction").text("");
+			$("#dog-prediction").text("");
+			$("#ship-prediction").text("");
+			$("#truck-prediction").text("");
+		});
+
+		$("#predict-button").click(function(event){
+			let message = {
+				image:base64Image
+			}
+			console.log(message);
+			$.post("http://localhost:5000/predict", JSON.stringify(message), function(response){
+				$("#automobile-prediction").text(response.prediction.automobile.toFixed(6));
+				$("#cat-prediction").text(response.prediction.cat.toFixed(6));
+				$("#dog-prediction").text(response.prediction.dog.toFixed(6));
+				$("#ship-prediction").text(response.prediction.ship.toFixed(6));
+				$("#truck-prediction").text(response.prediction.truck.toFixed(6));
+				console.log(response);
+			});
+		});
+	</script>	
+
+	<!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>-->
+</body>
+</html>
